@@ -13,6 +13,7 @@ import (
 func postTriggerHandler(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	method := c.Request.Header["X-Github-Event"][0]
+	tasksChan := c.MustGet("tasksChan").(chan []common.Task)
 	switch method {
 	case "ping":
 		var tmp interface{}
@@ -29,7 +30,7 @@ func postTriggerHandler(c *gin.Context) {
 	case "push":
 		var PushInfo common.Push
 		if c.BindJSON(&PushInfo) == nil {
-			err := triggerPush(PushInfo, db)
+			err := triggerPush(PushInfo, db, tasksChan)
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Intern Server Error!")
 			}

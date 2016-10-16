@@ -10,19 +10,22 @@ const (
 	TaskWaitRunningStatus
 	TaskRunningStatus
 	TaskSuccessStatus
-	TaskFailedStatus
+	TaskCreatFailed
 )
 
 type Task struct {
-	ID          bson.ObjectId
-	CommitID    string
-	Status      int
-	MachineName string
-	MachineIP   string
-	Folder      string //Generally they are same as folder
-	Name        string
+	ID       bson.ObjectId
+	CommitID string
+	Status   int
+	Folder   string //Generally they are same as folder
+	VMachine
 }
 
+type VMachine struct {
+	Name string
+	UUID string
+	IP   string
+}
 type Log struct {
 	ID       bson.ObjectId
 	TaskID   bson.ObjectId

@@ -6,6 +6,7 @@ import (
 
 	"github.com/libgit2/git2go"
 	"github.com/qhsong/golang-vm-ci/common"
+	"github.com/satori/go.uuid"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -32,7 +33,7 @@ func cloneRepo(repo common.Repository, commit *common.Commit) (string, error) {
 	return path, nil
 }
 
-func triggerPush(PushInfo common.Push, db *mgo.Database) error {
+func triggerPush(PushInfo common.Push, db *mgo.Database, taskChan chan []common.Task) error {
 	for _, commit := range PushInfo.Commits {
 		n, _ := db.C(common.C_COMMIT).Find(bson.M{"commitid": commit.CommitID}).Count()
 		if n == 0 {
@@ -48,13 +49,14 @@ func triggerPush(PushInfo common.Push, db *mgo.Database) error {
 					return err
 				}
 			}
-
+			taskChan <- tasks
 		} else {
 			//Exist in DB, exit
 			return errors.New("Commit have been exists")
 		}
 
 	}
+	return nil
 }
 
 func inArray(target string, array []string) bool {
@@ -78,9 +80,10 @@ func getTaskList(commit *common.Commit, path string) []common.Task {
 				ID:       bson.NewObjectId(),
 				CommitID: commit.CommitID,
 				Status:   common.TaskNewStatus,
-				Name:     dir.Name(),
 				Folder:   dir.Name(),
 			}
+			task.Name = commit.CommitID[:5] + "-" + dir.Name()
+			task.UUID = uuid.NewV4().String()
 			tasks = append(tasks, task)
 		}
 	}
