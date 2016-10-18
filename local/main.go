@@ -59,6 +59,8 @@ func main() {
 	r.Use(DBMiddileWare)
 
 	tasksChan := make(chan []common.Task, 1000)
+	exitChan := make(chan int, 1)
+	go taskWatchLoop(dbinfo.Session.Clone(), tasksChan, exitChan)
 	r.Use(ChanMiddileWare(tasksChan))
 	r.POST("/trigger/", postTriggerHandler)
 	r.Run(":8080")

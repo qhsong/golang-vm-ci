@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"errors"
 	"net"
 
 	"github.com/qhsong/golang-vm-ci/common"
@@ -14,15 +15,18 @@ import (
 )
 
 func generatorTasks(connection libvirt.VirConnection, db *mgo.Database, task common.Task) error {
-	args := fmt.Sprintf("--name %s -u %s", task.Name, task.UUID)
+	args := fmt.Sprintf("--name %s -u %s --original-xml template.xml --file /var/lib/libvirt/images/%s.qcow2", task.Name, task.UUID, task.UUID)
+	fmt.Println(args)
 	cmd := exec.Command("virt-clone", args)
-	err := cmd.Run()
+	cout, err := cmd.Output()
 	if err != nil {
 		task.Status = common.TaskCreatFailed
+		err = errors.New(string(cout))
 	} else {
 		task.Status = common.TaskPreparingStatus
 	}
 	db.C(common.C_TASK).UpdateId(task.ID, task)
+
 	return err
 }
 
