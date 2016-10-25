@@ -14,7 +14,7 @@ const (
 )
 
 type Task struct {
-	ID       bson.ObjectId
+	ID       bson.ObjectId `bson:"_id"`
 	CommitID string
 	Status   int
 	Folder   string //Generally they are same as folder
@@ -22,9 +22,10 @@ type Task struct {
 }
 
 type VMachine struct {
-	Name string
-	UUID string
-	IP   string
+	Name     string
+	UUID     string
+	IP       string
+	DiskPath string
 }
 type Log struct {
 	ID       bson.ObjectId

@@ -1,6 +1,6 @@
 <domain type='kvm'>
-  <name>rhel6.8</name>
-  <uuid>723d1b8f-5c7d-46db-a5cb-7c17e71b6d20</uuid>
+  <name>{{ .Name }}</name>
+  <uuid>{{ .UUID }}</uuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
@@ -32,7 +32,7 @@
     <emulator>/usr/bin/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='/var/lib/libvirt/images/template.qcow2'/>
+      <source file='{{ .DiskPath }}' />
       <backingStore/>
       <target dev='hda' bus='ide' />
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
@@ -65,20 +65,16 @@
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </controller>
-    <interface type='direct'>
-      <mac address='52:54:00:ac:06:f2'/>
-      <source dev='enp0s25' mode='bridge'/>
-      <model type='e1000'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-    </interface>
     <interface type='network'>
-      <mac address='52:54:00:01:70:58'/>
       <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </interface>
-    <serial type='pty'>
+    <serial type='file'>
       <target port='0'/>
+       <source path='/tmp/111' append='on'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
     </serial>
     <console type='pty'>
       <target type='serial' port='0'/>

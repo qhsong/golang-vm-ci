@@ -41,7 +41,7 @@ type Commit struct {
 
 //Repository struct
 type Repository struct {
-	ID       string
+	ID       string `bson:"_id"`
 	Name     string
 	FullName string `json:"full_name"`
 	URL      string `json:"url"`

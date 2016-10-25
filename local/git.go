@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/libgit2/git2go"
@@ -16,17 +17,21 @@ func cloneRepo(repo common.Repository, commit *common.Commit) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	gitRepo, err := git.Clone(repo.CloneURL, path, nil)
+	opt := &git.CloneOptions{}
+	gitRepo, err := git.Clone(repo.CloneURL, path, opt)
+	defer gitRepo.Free()
 	if err != nil {
 		return "", err
 	}
 	CommitId, _ := git.NewOid(commit.CommitID)
 	gitCommit, err := gitRepo.LookupCommit(CommitId)
+	defer gitCommit.Free()
 	if err != nil {
 		return "", err
 	}
-	gitTree, _ := gitCommit.Tree()
-	err = gitRepo.CheckoutTree(gitTree, nil)
+	//gitTree, _ := gitCommit.Tree()
+	copt := git.CheckoutOpts{}
+	err = gitRepo.ResetToCommit(gitCommit, git.ResetHard, &copt)
 	if err != nil {
 		return "", err
 	}
@@ -84,6 +89,7 @@ func getTaskList(commit *common.Commit, path string) []common.Task {
 			}
 			task.Name = commit.CommitID[:5] + "-" + dir.Name()
 			task.UUID = uuid.NewV4().String()
+			task.DiskPath = fmt.Sprintf("/home/qhsong/qemuimg/%s.qcow2", task.Name)
 			tasks = append(tasks, task)
 		}
 	}
