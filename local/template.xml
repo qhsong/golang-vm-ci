@@ -72,7 +72,7 @@
     </interface>
     <serial type='file'>
       <target port='0'/>
-       <source path='/tmp/111' append='on'>
+       <source path='{{ .ConsoleFile }}' append='on'>
         <seclabel model='dac' relabel='no'/>
       </source>
     </serial>

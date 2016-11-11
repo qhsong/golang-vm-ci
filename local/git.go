@@ -89,7 +89,8 @@ func getTaskList(commit *common.Commit, path string) []common.Task {
 			}
 			task.Name = commit.CommitID[:5] + "-" + dir.Name()
 			task.UUID = uuid.NewV4().String()
-			task.DiskPath = fmt.Sprintf("/home/qhsong/qemuimg/%s.qcow2", task.Name)
+			task.DiskPath = fmt.Sprintf("/root/%s.qcow2", task.Name)
+			task.ConsoleFile = fmt.Sprintf("/root/console/%s.log", task.Name)
 			tasks = append(tasks, task)
 		}
 	}

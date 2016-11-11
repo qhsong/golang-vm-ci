@@ -63,5 +63,10 @@ func main() {
 	go taskWatchLoop(dbinfo.Session.Clone(), tasksChan, exitChan)
 	r.Use(ChanMiddileWare(tasksChan))
 	r.POST("/trigger/", postTriggerHandler)
+	client := r.Group("/client")
+	{
+		client.GET("/", getClientInfoHandler)
+	}
+	)
 	r.Run(":8080")
 }

@@ -22,10 +22,11 @@ type Task struct {
 }
 
 type VMachine struct {
-	Name     string
-	UUID     string
-	IP       string
-	DiskPath string
+	Name        string
+	UUID        string
+	IP          string
+	DiskPath    string
+	ConsoleFile string
 }
 type Log struct {
 	ID       bson.ObjectId
